@@ -45,15 +45,20 @@ button{font:inherit}
 
   <section id="home" class="card">
     <h2>Prêt pour l’aventure ?</h2>
-    <p>Chaque QR code ouvre directement une balise et ses <b>3 questions</b>. Une balise non trouvée n’empêche pas de poursuivre le jeu.</p>
+    <p>Chaque QR code ouvre uniquement sa propre balise et ses <b>3 questions</b>. Pour continuer, il faut partir à la recherche d’une autre balise et scanner son QR code.</p>
     <button class="primary" onclick="start()">TESTER LE JEU</button>
   </section>
 
   <section id="game" class="hidden">
     <div class="card">
-      <div class="grid" id="balises"></div>
+      <div style="text-align:center">
+        <span class="badge">BALISE EN COURS</span>
+        <h2 id="currentBaliseLabel" style="margin:8px 0;color:#214a38">Balise 1</h2>
+        <p class="small">Pour découvrir les autres défis, pars à la recherche des prochaines balises et scanne leur QR code.</p>
+      </div>
       <div class="progress"><div class="bar" id="progressBar"></div></div>
       <p id="progressText" style="text-align:center">0 question répondue sur 24</p>
+      <p id="timer" class="small" style="text-align:center;font-weight:800;color:#214a38">⏱️ Temps : 00:00:00</p>
     </div>
 
     <div class="card" id="questionCard"></div>
@@ -61,7 +66,7 @@ button{font:inherit}
     <div class="card">
       <button class="secondary" onclick="goHome()">← Retour à l’accueil</button>
       <button class="primary" id="finishBtn" onclick="finish()" style="display:none">TERMINER L’AVENTURE</button>
-      <p class="small">Le résultat final est déclenché lorsque les 3 questions de la <b>Balise 8</b> sont terminées, car cette balise correspond à la fin de la randonnée.</p>
+      <p class="small">Après les 3 questions, pars à la recherche de la prochaine balise et scanne son QR code. La <b>Balise 8</b> termine l’aventure.</p>
     </div>
   </section>
 
@@ -116,7 +121,7 @@ const data = [
 ]}
 ];
 
-let state={answers:{},currentBalise:1,currentQ:0};
+let state={answers:{},currentBalise:1,currentQ:0,startTime:null,finishTime:null};
 const key="defi_explorateurs_v2";
 
 function load(){
@@ -128,8 +133,32 @@ function load(){
 function save(){localStorage.setItem(key,JSON.stringify(state))}
 function answeredCount(){return Object.keys(state.answers).length}
 function baliseDone(b){return data[b-1].qs.every((_,i)=>state.answers[`${b}-${i}`]!==undefined)}
+
+function formatTime(seconds){
+  seconds=Math.max(0,Math.floor(seconds));
+  const h=String(Math.floor(seconds/3600)).padStart(2,"0");
+  const m=String(Math.floor((seconds%3600)/60)).padStart(2,"0");
+  const s=String(seconds%60).padStart(2,"0");
+  return `${h}:${m}:${s}`;
+}
+function startTimer(){
+  if(!state.startTime){
+    state.startTime=Date.now();
+    save();
+  }
+  updateTimer();
+}
+function updateTimer(){
+  const el=document.getElementById("timer");
+  if(!el) return;
+  const end=state.finishTime || Date.now();
+  el.textContent=`⏱️ Temps : ${formatTime((end-state.startTime)/1000)}`;
+}
+setInterval(updateTimer,1000);
+
 function start(){
   load();
+  startTimer();
   document.getElementById("home").classList.add("hidden");
   document.getElementById("result").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
@@ -145,15 +174,10 @@ function render(){
   updateProgress();
 }
 function renderBalises(){
-  const box=document.getElementById("balises"); box.innerHTML="";
-  data.forEach((b,i)=>{
-    const n=i+1,btn=document.createElement("button");
-    btn.className="bal"+(baliseDone(n)?" done":"")+(state.currentBalise===n?" active":"");
-    btn.textContent=`Balise ${n}`;
-    btn.onclick=()=>{state.currentBalise=n;state.currentQ=0;render()};
-    box.appendChild(btn);
-  });
+  const el=document.getElementById("currentBaliseLabel");
+  if(el) el.textContent=`Balise ${state.currentBalise}`;
 }
+
 function renderQuestion(){
   const b=state.currentBalise, q=state.currentQ, item=data[b-1].qs[q];
   const card=document.getElementById("questionCard");
@@ -213,25 +237,32 @@ function updateProgress(){
 }
 function finish(){
   if(!baliseDone(8)){alert("La Balise 8 doit être terminée pour finir l’aventure.");return}
+  state.finishTime=Date.now();
+  save();
+
   const total=answeredCount();
   let good=0;
   Object.entries(state.answers).forEach(([k,v])=>{
     const [b,q]=k.split("-").map(Number);
     if(data[b-1].qs[q].a===v) good++;
   });
+
+  const elapsed=formatTime((state.finishTime-state.startTime)/1000);
   document.getElementById("game").classList.add("hidden");
   const r=document.getElementById("result");r.classList.remove("hidden");
   const done=data.filter((_,i)=>baliseDone(i+1)).length;
+
   r.innerHTML=`<h2>🏁 Aventure terminée !</h2>
   <div class="score">${good}/${total}</div>
   <p style="text-align:center"><b>Bonnes réponses</b></p>
+  <div style="text-align:center;font-size:22px;font-weight:800;color:#214a38;margin:12px 0">⏱️ ${elapsed}</div>
   <p style="text-align:center">${done} balise(s) trouvée(s) sur 8 • ${total} question(s) répondue(s) sur 24</p>
-  <p>Bravo ! La <b>Balise 8</b> marque la fin de la randonnée et déclenche le résultat final.</p>
+  <p style="text-align:center">Bravo ! Tu as atteint la <b>Balise 8</b>, la ligne d’arrivée de l’aventure.</p>
   <button class="primary" onclick="restart()">RECOMMENCER UNE NOUVELLE AVENTURE</button>`;
 }
 function restart(){
   localStorage.removeItem(key);
-  state={answers:{},currentBalise:1,currentQ:0};
+  state={answers:{},currentBalise:1,currentQ:0,startTime:null,finishTime:null};
   location.href=location.pathname;
 }
 function goHome(){
@@ -240,6 +271,7 @@ function goHome(){
   document.getElementById("home").classList.remove("hidden");
 }
 load();
+if(state.startTime) updateTimer();
 if(new URLSearchParams(location.search).has("balise")) start();
 </script>
 </body>
