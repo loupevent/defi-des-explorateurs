@@ -46,7 +46,12 @@ button{font:inherit}
   <section id="home" class="card">
     <h2>Prêt pour l’aventure ?</h2>
     <p>Chaque QR code ouvre uniquement sa propre balise et ses <b>3 questions</b>. Pour continuer, il faut partir à la recherche d’une autre balise et scanner son QR code.</p>
-    <button class="primary" onclick="start()">TESTER LE JEU</button>
+    <label for="playerName" style="display:block;font-weight:800;margin:16px 0 7px">Ton prénom</label>
+    <input id="playerName" type="text" maxlength="30" autocomplete="given-name"
+      placeholder="Ex. Thomas"
+      style="width:100%;padding:14px;border:2px solid #e0e4df;border-radius:13px;font:inherit">
+    <button class="primary" onclick="start()">COMMENCER L’AVENTURE</button>
+    <p class="small">Ton prénom servira uniquement à identifier ton résultat dans le classement.</p>
   </section>
 
   <section id="game" class="hidden">
@@ -121,7 +126,7 @@ const data = [
 ]}
 ];
 
-let state={answers:{},currentBalise:1,currentQ:0,startTime:null,finishTime:null};
+let state={answers:{},currentBalise:1,currentQ:0,startTime:null,finishTime:null,playerName:"",submitted:false};
 const key="defi_explorateurs_v2";
 
 function load(){
@@ -158,10 +163,23 @@ setInterval(updateTimer,1000);
 
 function start(){
   load();
+  const input=document.getElementById("playerName");
+  const name=(input ? input.value : state.playerName || "").trim();
+
+  if(!name){
+    alert("Indique ton prénom avant de commencer.");
+    if(input) input.focus();
+    return;
+  }
+
+  state.playerName=name;
   startTimer();
+  save();
+
   document.getElementById("home").classList.add("hidden");
   document.getElementById("result").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
+
   const p=new URLSearchParams(location.search).get("balise");
   const n=parseInt(p,10);
   state.currentBalise=(n>=1&&n<=8)?n:state.currentBalise||1;
@@ -235,6 +253,34 @@ function updateProgress(){
   document.getElementById("progressText").textContent=`${n} question(s) répondue(s) sur 24`;
   document.getElementById("progressBar").style.width=(n/24*100)+"%";
 }
+function escapeHtml(text){
+  return String(text).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+
+function sendResultToServer(good,total,elapsed,done){
+  // À remplacer par l’URL de ton Google Apps Script après sa création.
+  const RESULTS_URL="https://script.google.com/macros/s/AKfycbxazzppM18E92F3kMi1gUb7P7J8HbJ4C1sBk2_PaK1iAudD2j_LPgwvkVcalG6PPZViDw/exec";
+
+  if(RESULTS_URL.startsWith("A_REMPLACER") || state.submitted) return;
+
+  state.submitted=true;
+  save();
+
+  fetch(RESULTS_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({
+      prenom:state.playerName,
+      score:good,
+      total:total,
+      temps:elapsed,
+      balises:done,
+      date:new Date().toISOString()
+    })
+  }).catch(()=>{});
+}
+
 function finish(){
   if(!baliseDone(8)){alert("La Balise 8 doit être terminée pour finir l’aventure.");return}
   state.finishTime=Date.now();
@@ -248,21 +294,24 @@ function finish(){
   });
 
   const elapsed=formatTime((state.finishTime-state.startTime)/1000);
+  const done=data.filter((_,i)=>baliseDone(i+1)).length;
+  sendResultToServer(good,total,elapsed,done);
   document.getElementById("game").classList.add("hidden");
   const r=document.getElementById("result");r.classList.remove("hidden");
-  const done=data.filter((_,i)=>baliseDone(i+1)).length;
 
   r.innerHTML=`<h2>🏁 Aventure terminée !</h2>
+  <p style="text-align:center;font-size:20px"><b>${escapeHtml(state.playerName || "Explorateur")}</b></p>
   <div class="score">${good}/${total}</div>
   <p style="text-align:center"><b>Bonnes réponses</b></p>
   <div style="text-align:center;font-size:22px;font-weight:800;color:#214a38;margin:12px 0">⏱️ ${elapsed}</div>
   <p style="text-align:center">${done} balise(s) trouvée(s) sur 8 • ${total} question(s) répondue(s) sur 24</p>
   <p style="text-align:center">Bravo ! Tu as atteint la <b>Balise 8</b>, la ligne d’arrivée de l’aventure.</p>
+  <p class="small" style="text-align:center">Ton résultat a été enregistré pour le classement.</p>
   <button class="primary" onclick="restart()">RECOMMENCER UNE NOUVELLE AVENTURE</button>`;
 }
 function restart(){
   localStorage.removeItem(key);
-  state={answers:{},currentBalise:1,currentQ:0,startTime:null,finishTime:null};
+  state={answers:{},currentBalise:1,currentQ:0,startTime:null,finishTime:null,playerName:"",submitted:false};
   location.href=location.pathname;
 }
 function goHome(){
@@ -272,7 +321,9 @@ function goHome(){
 }
 load();
 if(state.startTime) updateTimer();
-if(new URLSearchParams(location.search).has("balise")) start();
+const nameInput=document.getElementById("playerName");
+if(nameInput && state.playerName) nameInput.value=state.playerName;
+if(new URLSearchParams(location.search).has("balise") && state.startTime) start();
 </script>
 </body>
 </html>
