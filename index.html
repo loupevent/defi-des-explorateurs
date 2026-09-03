@@ -3,131 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Défi des Explorateurs — 8 balises, 24 questions</title>
+<title>Défi des Explorateurs</title>
 <style>
 :root{--green:#214a38;--light:#f3f0e8;--card:#fff;--text:#17231d;--accent:#c98b43}
-*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#dfe8e2,#f4f1e9);color:var(--text)}
-.wrap{max-width:650px;margin:auto;padding:18px 15px 45px} .hero{background:var(--green);color:white;border-radius:24px;padding:28px 22px;margin:8px 0 16px;box-shadow:0 8px 25px #0002}
-.hero h1{font-size:30px;margin:6px 0} .hero p{line-height:1.45;margin:6px 0} .card{background:white;border-radius:20px;padding:21px;margin:13px 0;box-shadow:0 5px 18px #0001}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px} .bal{padding:13px 5px;border:0;border-radius:12px;background:#e8eee9;color:var(--green);font-weight:800;cursor:pointer}
-.bal.done{background:var(--green);color:white} .badge{display:inline-block;padding:7px 11px;border-radius:99px;background:#eee5d6;color:#60431f;font-size:13px;font-weight:800}
-.qcount{font-size:13px;color:#66736c;margin-top:10px} .question{font-size:21px;line-height:1.35;font-weight:800;margin:13px 0}
-button.option,button.primary,button.secondary{width:100%;padding:14px 15px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:9px}
-.option{background:#f7f7f5;border:2px solid #e0e4df;text-align:left;color:var(--text)} .option.selected{border-color:var(--green);background:#eaf1ec}
-.option.correct{border-color:#3c7d55;background:#e5f2e9} .option.wrong{border-color:#b55b4d;background:#f8e9e6}
-.primary{border:0;background:var(--green);color:white} .secondary{border:0;background:#e9eee9;color:var(--green)}
-.feedback{background:#f5f1e9;border-radius:12px;padding:14px;margin-top:14px;line-height:1.45} .hidden{display:none}
-.progress{height:9px;background:#dbe3dd;border-radius:20px;overflow:hidden;margin-top:13px} .bar{height:100%;background:var(--accent);width:0}
-.score{font-size:44px;text-align:center;font-weight:900;color:var(--green)} .small{font-size:14px;color:#5c6861;text-align:center;line-height:1.45}
-.source{font-size:12px;color:#68736d;line-height:1.45;margin-top:18px} .title2{margin:5px 0 3px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#dfe8e2,#f4f1e9);color:var(--text)}
+.wrap{max-width:650px;margin:auto;padding:18px 15px 30px}
+.hero{background:var(--green);color:white;border-radius:24px;padding:22px;margin-bottom:14px;box-shadow:0 8px 25px #0002}
+.hero h1{font-size:30px;margin:6px 0}.hero p{margin:6px 0}.hero .emoji{font-size:40px}
+.card{background:white;border-radius:20px;padding:20px;margin:13px 0;box-shadow:0 5px 18px #0001}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+button{font:inherit}
+.bal{border:0;border-radius:13px;padding:13px 5px;font-weight:700;cursor:pointer;background:#e9efeb;color:var(--green)}
+.bal.done{background:var(--green);color:white}
+.bal.active{outline:3px solid #c98b43}
+.question{font-size:21px;line-height:1.35;font-weight:800;margin:13px 0}
+.option{background:#f7f7f5;border:2px solid #e0e4df;text-align:left;color:var(--text);border-radius:13px;padding:14px 15px;width:100%;cursor:pointer;margin-top:9px}
+.option.selected{border-color:var(--green);background:#eaf1ec}
+.option.correct{border-color:#26734d;background:#e5f3e9}
+.option.wrong{border-color:#b55d4c;background:#f9e8e5}
+.primary{border:0;background:var(--green);color:white;border-radius:13px;padding:14px;width:100%;font-weight:800;cursor:pointer;margin-top:10px}
+.secondary{border:0;background:#eee;color:var(--green);border-radius:13px;padding:12px 16px;font-weight:800;cursor:pointer}
+.feedback{padding:12px;border-radius:12px;margin-top:12px;line-height:1.45}.hidden{display:none}
+.progress{height:9px;background:#dbe3dd;border-radius:20px;overflow:hidden;margin-top:12px}.bar{height:100%;background:var(--accent);width:0}
+.score{text-align:center;font-size:42px;font-weight:900;color:var(--green)}
+.small{font-size:13px;color:#68736d;line-height:1.45}
+.badge{display:inline-block;padding:7px 11px;border-radius:99px;background:#eee5d6;color:#60431f;font-size:13px;font-weight:800}
+.title2{margin:5px 0 3px}
+.source{font-size:12px;color:#68736d;line-height:1.45;margin-top:18px}
+@media(max-width:500px){.grid{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:27px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="hero"><div style="font-size:42px">🏔️</div><h1>Défi des Explorateurs</h1><p><b>8 balises • 24 questions</b></p><p>3 questions à chaque balise, à découvrir dans n’importe quel ordre.</p></div>
+  <div class="hero">
+    <div class="emoji">🏔️</div>
+    <h1>Défi des Explorateurs</h1>
+    <p><b>8 balises • 24 questions</b></p>
+    <p>3 questions à chaque balise, à découvrir dans n’importe quel ordre.</p>
+  </div>
 
-<section id="home" class="card">
-<h2>Prêt pour l’aventure ?</h2>
-<p>Chaque QR code ouvrira directement une balise et ses <b>3 questions</b>. Une balise non trouvée n’empêche pas de poursuivre le jeu.</p>
-<button class="primary" onclick="start()">TESTER LE JEU</button>
-</section>
+  <section id="home" class="card">
+    <h2>Prêt pour l’aventure ?</h2>
+    <p>Chaque QR code ouvre directement une balise et ses <b>3 questions</b>. Une balise non trouvée n’empêche pas de poursuivre le jeu.</p>
+    <button class="primary" onclick="start()">TESTER LE JEU</button>
+  </section>
 
-<section id="game" class="hidden">
-<div class="card">
-<div class="grid" id="balises"></div>
-<div class="progress"><div class="bar" id="globalbar"></div></div>
-<p class="small" id="globaltxt"></p>
-</div>
-<div class="card">
-<span class="badge" id="badge"></span>
-<div class="qcount" id="qcount"></div>
-<div class="question" id="question"></div>
-<div id="options"></div>
-<div id="feedback"></div>
-<button id="validate" class="primary" onclick="validateAnswer()">VALIDER</button>
-<button id="nextq" class="secondary hidden" onclick="nextQuestion()">QUESTION SUIVANTE</button>
-<button id="back" class="secondary hidden" onclick="backToBalises()">CHOISIR UNE AUTRE BALISE</button>
-</div>
-</section>
+  <section id="game" class="hidden">
+    <div class="card">
+      <div class="grid" id="balises"></div>
+      <div class="progress"><div class="bar" id="progressBar"></div></div>
+      <p id="progressText" style="text-align:center">0 question répondue sur 24</p>
+    </div>
 
-<section id="final" class="card hidden">
-<h2 style="text-align:center">🏆 Résultat du défi</h2>
-<div class="score" id="score"></div>
-<p class="small" id="summary"></p>
-<button class="primary" onclick="location.href=location.pathname">RECOMMENCER</button>
-</section>
+    <div class="card" id="questionCard"></div>
 
-<div class="source">
-<b>Notes de contenu :</b> certaines données locales et de sécurité ont été vérifiées à partir de sources officielles : evian (filtration naturelle de plus de 15 ans), Office fédéral suisse de l’environnement (Léman ≈ 89 km³ et ≈ 310 m de profondeur), ANENA (orientations des avalanches mortelles) et FFME (ancienne signalisation par drapeaux).
-</div>
+    <div class="card">
+      <button class="secondary" onclick="goHome()">← Retour à l’accueil</button>
+      <button class="primary" id="finishBtn" onclick="finish()" style="display:none">TERMINER L’AVENTURE</button>
+      <p class="small">Le résultat final est déclenché lorsque les 3 questions de la <b>Balise 8</b> sont terminées, car cette balise correspond à la fin de la randonnée.</p>
+    </div>
+  </section>
+
+  <section id="result" class="card hidden"></section>
+
+  <div class="source">
+    Notes de contenu : certaines données locales et de sécurité ont été vérifiées à partir de sources officielles : Evian (filtration naturelle de plus de 15 ans), Office fédéral suisse de l’environnement (Léman ≈ 89 km³ et ≈ 310 m de profondeur), ANENA (orientations des avalanches mortelles) et FFME (ancienne signalisation par drapeaux).
+  </div>
 </div>
 
 <script>
-const data=[[["Combien de temps une marmotte alpine hiberne-t-elle généralement ?", ["Environ 1 à 2 mois", "Environ 3 mois", "Environ 5 à 6 mois", "Environ 9 à 10 mois"], 2, "La marmotte alpine hiberne généralement de l’automne au début du printemps, soit environ 5 à 6 mois."], ["Quel animal alpin possède de grandes cornes annelées et recourbées vers l’arrière ?", ["Le bouquetin", "Le chamois", "La marmotte", "Le lièvre variable"], 0, "Le bouquetin, surtout le mâle, porte de grandes cornes annelées très caractéristiques."], ["Pourquoi ne faut-il pas nourrir les animaux sauvages en montagne ?", ["Parce qu’ils deviennent immédiatement dangereux", "Parce que cela peut modifier leur comportement et leur alimentation", "Parce qu’ils ne mangent jamais de nourriture humaine", "Uniquement parce que c’est salissant"], 1, "Nourrir un animal sauvage peut modifier son comportement naturel, son régime alimentaire et sa relation avec l’être humain."]], [["Combien de temps l’eau minérale naturelle evian met-elle à se filtrer à travers les roches glaciaires de son impluvium ?", ["Environ 6 mois", "Environ 3 ans", "Plus de 15 ans", "Plus de 100 ans"], 2, "L’eau evian effectue un lent parcours souterrain et se filtre naturellement pendant plus de 15 ans."], ["Quel est le volume approximatif du lac Léman ?", ["9 km³", "39 km³", "89 km³", "289 km³"], 2, "Le volume du Léman est d’environ 89 km³, soit près de 89 000 milliards de litres d’eau."], ["Quel grand fleuve traverse le lac Léman ?", ["La Loire", "Le Rhône", "Le Rhin", "La Seine"], 1, "Le Rhône entre dans le Léman côté Valais et en ressort à Genève."]], [["En plein hiver, quelles orientations sont statistiquement les plus représentées parmi les zones de départ des avalanches mortelles en France ?", ["Les versants ombragés, du nord-ouest à l’est", "Uniquement les versants plein sud", "Uniquement les versants ouest", "Toutes exactement de la même manière"], 0, "Les statistiques de l’ANENA montrent une forte représentation des orientations ombragées, du nord-ouest à l’est, où certaines instabilités peuvent persister plus longtemps."], ["Quelles couleurs étaient utilisées dans l’ancienne signalisation française par drapeaux pour le risque d’avalanche ?", ["Bleu et blanc", "Rouge et blanc", "Jaune et noir", "Vert et rouge"], 2, "L’ancienne signalisation utilisait des drapeaux jaune, jaune et noir à damier, puis noir. Elle a depuis été remplacée par une signalétique moderne à cinq niveaux."], ["Que faut-il consulter avant une sortie en montagne enneigée ?", ["Uniquement l’heure du coucher du soleil", "Le bulletin météo et le bulletin d’estimation du risque d’avalanche", "Uniquement la température en ville", "La couleur des pistes de ski"], 1, "La météo et le bulletin d’estimation du risque d’avalanche donnent des informations essentielles sur les conditions et le niveau de danger."]], [["Quel conifère des Alpes perd ses aiguilles en automne ?", ["Le sapin", "L’épicéa", "Le mélèze", "Le pin à crochets"], 2, "Le mélèze est un conifère particulier : ses aiguilles jaunissent puis tombent à l’automne."], ["Pourquoi les plantes de haute montagne sont-elles souvent petites et proches du sol ?", ["Pour mieux résister au vent et au froid", "Parce qu’elles n’ont jamais besoin de soleil", "Parce que le sol est toujours chaud", "Pour attirer davantage les oiseaux"], 0, "Une croissance basse aide de nombreuses plantes alpines à mieux résister au vent, au froid et aux conditions difficiles."], ["Comment appelle-t-on la zone au-dessus de laquelle les arbres ne forment plus naturellement de forêt continue ?", ["La limite forestière", "La ligne des marées", "La zone tropicale", "La ligne magnétique"], 0, "La limite forestière marque la transition entre la forêt et les milieux alpins plus ouverts."]], [["Sur une carte topographique, que relie une courbe de niveau ?", ["Des points de même altitude", "Des points de même température", "Les refuges entre eux", "Les limites des communes uniquement"], 0, "Une courbe de niveau relie tous les points situés à la même altitude."], ["Si le nord se trouve en haut de la carte, où se situe l’est ?", ["À gauche", "À droite", "En bas", "Toujours en diagonale"], 1, "Sur une carte orientée avec le nord en haut, l’est est à droite."], ["Que signifie généralement un fort rapprochement des courbes de niveau sur une carte ?", ["Le terrain est très plat", "La pente est plus raide", "Il y a forcément une rivière", "On arrive dans une ville"], 1, "Plus les courbes de niveau sont serrées, plus le dénivelé change rapidement : la pente est donc plus raide."]], [["Quel comportement est le plus respectueux dans une zone naturelle protégée ?", ["Quitter le sentier pour prendre un raccourci", "Rester sur les itinéraires autorisés", "Cueillir les fleurs rares", "Déplacer les pierres pour construire des cairns partout"], 1, "Rester sur les itinéraires autorisés limite le piétinement, l’érosion et le dérangement de la faune."], ["Parmi ces déchets, lequel peut persister très longtemps dans l’environnement ?", ["Une feuille morte", "Une bouteille en plastique", "Une brindille", "Une pomme tombée d’un arbre"], 1, "Le plastique peut persister très longtemps et se fragmenter progressivement en microplastiques."], ["Que faire de ses déchets pendant une randonnée ?", ["Les cacher sous une pierre", "Les brûler sur place", "Les emporter avec soi", "Les jeter dans un torrent"], 2, "Le bon réflexe est de tout remporter, y compris les petits déchets et les restes alimentaires."]], [["Quand l’altitude augmente, que fait généralement la température de l’air ?", ["Elle augmente toujours", "Elle diminue généralement", "Elle reste exactement identique", "Elle dépend uniquement de l’heure"], 1, "Dans la troposphère, la température diminue généralement avec l’altitude, même si les conditions réelles peuvent varier."], ["Si un orage approche pendant une randonnée sur une crête, quelle attitude est la plus prudente ?", ["Rester sur le point le plus haut", "S’éloigner des crêtes et des points exposés", "S’abriter sous l’arbre le plus isolé", "Tenir ses bâtons métalliques au-dessus de la tête"], 1, "En cas d’orage, il faut quitter les crêtes, sommets et autres points très exposés et rechercher une zone moins vulnérable."], ["Pourquoi le soleil peut-il être particulièrement agressif en altitude ?", ["Le rayonnement ultraviolet y est généralement plus intense", "Il n’y a plus d’atmosphère dès 1 000 m", "La neige bloque totalement les UV", "Le soleil est physiquement beaucoup plus proche"], 0, "L’atmosphère filtre moins les UV à mesure que l’altitude augmente, et la neige peut en plus réfléchir une partie du rayonnement."]], [["À quelle profondeur maximale environ descend le lac Léman ?", ["80 m", "160 m", "310 m", "750 m"], 2, "Le Léman atteint environ 310 mètres à son point le plus profond."], ["Quel est le plus haut sommet des Alpes ?", ["Le Mont Blanc", "Le Cervin", "La Dent d’Oche", "Le Mont Ventoux"], 0, "Le Mont Blanc est le plus haut sommet des Alpes."], ["À Évian-les-Bains, comment s’appelle la célèbre source publique associée à l’eau minérale evian ?", ["Source Cachat", "Source du Rhône", "Source Léman", "Source du Mont Blanc"], 0, "La source Cachat, à Évian-les-Bains, est étroitement liée à l’histoire de l’eau minérale evian."]]];
-let answers=Array.from({length:8},()=>Array(3).fill(null));
-let b=0,q=0,selected=null;
+const data = [
+{title:"Faune alpine",qs:[
+{q:"Combien de temps une marmotte alpine hiberne-t-elle généralement ?",o:["Environ 1 à 2 mois","Environ 3 mois","Environ 5 à 6 mois","Environ 9 à 10 mois"],a:2,e:"La marmotte hiberne généralement d’octobre à mars, soit environ 5 à 6 mois."},
+{q:"Quel animal alpin possède de grandes cornes recourbées et annelées ?",o:["Le bouquetin","Le chamois","La marmotte","Le lynx"],a:0,e:"Le bouquetin est reconnaissable à ses grandes cornes épaisses, recourbées et annelées."},
+{q:"Pourquoi vaut-il mieux ne pas nourrir les animaux sauvages ?",o:["Pour qu’ils deviennent plus rapides","Parce que cela peut modifier leur comportement et leur alimentation","Parce qu’ils n’aiment pas la nourriture humaine","Pour éviter qu’ils hibernent"],a:1,e:"Nourrir les animaux sauvages peut modifier leur comportement, leur régime alimentaire et leur dépendance envers l’être humain."}
+]},
+{title:"Eau & Léman",qs:[
+{q:"Combien de temps l’eau d’Evian est-elle naturellement filtrée à travers les roches de l’impluvium ?",o:["Quelques jours","Environ 1 an","Plus de 15 ans","Plus de 100 ans"],a:2,e:"L’eau parcourt naturellement les roches des Alpes pendant plus de 15 ans avant d’atteindre la source."},
+{q:"Quel est approximativement le volume du lac Léman ?",o:["9 km³","29 km³","89 km³","189 km³"],a:2,e:"Le volume du lac Léman est d’environ 89 km³."},
+{q:"Quel grand fleuve traverse le lac Léman ?",o:["L’Isère","Le Rhône","L’Arve","Le Rhin"],a:1,e:"Le Rhône entre dans le Léman à l’est et en ressort à Genève."}
+]},
+{title:"Neige & avalanches",qs:[
+{q:"En plein hiver, quelles orientations de zones de départ sont particulièrement représentées dans les accidents mortels par avalanche ?",o:["Les secteurs ombragés du nord-ouest à l’est","Uniquement les versants plein sud","Uniquement les versants plein ouest","Toutes les orientations exactement de la même manière"],a:0,e:"Les statistiques de l’ANENA montrent une forte représentation des secteurs ombragés, du nord-ouest à l’est, en milieu d’hiver."},
+{q:"Dans l’ancienne signalisation française du risque d’avalanche, quelles couleurs étaient utilisées ?",o:["Bleu et blanc","Rouge et noir","Jaune et noir","Vert et rouge"],a:2,e:"L’ancienne signalisation utilisait notamment un drapeau jaune, un damier jaune/noir et un drapeau noir selon le niveau de risque."},
+{q:"Avant une sortie en montagne enneigée, quelle information faut-il consulter en priorité ?",o:["La couleur des chaussures des autres randonneurs","La météo et le bulletin d’estimation du risque d’avalanche","Uniquement la température en ville","La hauteur des arbres"],a:1,e:"La météo et le bulletin d’estimation du risque d’avalanche sont essentiels pour évaluer les conditions."}
+]},
+{title:"Flore",qs:[
+{q:"Quel conifère perd ses aiguilles en automne ?",o:["Le sapin","L’épicéa","Le mélèze","Le pin"],a:2,e:"Le mélèze est un conifère particulier : ses aiguilles jaunissent puis tombent à l’automne."},
+{q:"Pourquoi les plantes de haute montagne sont-elles souvent petites et proches du sol ?",o:["Pour mieux résister au vent et au froid","Parce qu’elles ne reçoivent jamais de soleil","Parce qu’elles n’ont pas besoin d’eau","Pour attirer les marmottes"],a:0,e:"Une forme basse limite l’exposition au vent, au froid et aux conditions difficiles."},
+{q:"Comment appelle-t-on la limite au-dessus de laquelle les arbres ne forment plus une forêt continue ?",o:["La limite forestière","La limite des rochers","La ligne des neiges","La frontière alpine"],a:0,e:"La limite forestière correspond à l’altitude au-dessus de laquelle la forêt ne forme plus un peuplement continu."}
+]},
+{title:"Orientation",qs:[
+{q:"Sur une carte topographique, que relie une courbe de niveau ?",o:["Des points de même altitude","Des points de même température","Des refuges entre eux","Les sommets uniquement"],a:0,e:"Une courbe de niveau relie des points qui se trouvent à la même altitude."},
+{q:"Si le nord est en haut d’une carte, où se trouve l’est ?",o:["À gauche","À droite","En bas","Au centre"],a:1,e:"Avec le nord en haut, l’est se trouve à droite et l’ouest à gauche."},
+{q:"Que signifient des courbes de niveau très rapprochées ?",o:["Une pente douce","Une pente forte","Une zone sans relief","Un lac"],a:1,e:"Plus les courbes de niveau sont rapprochées, plus la pente est forte."}
+]},
+{title:"Environnement",qs:[
+{q:"Dans une zone naturelle protégée, quel comportement est le plus respectueux ?",o:["Sortir des sentiers pour raccourcir","Rester sur les itinéraires autorisés","Cueillir quelques fleurs","Déplacer les pierres"],a:1,e:"Rester sur les itinéraires autorisés limite le dérangement de la faune et la dégradation de la végétation."},
+{q:"Lequel de ces déchets peut rester très longtemps dans la nature ?",o:["Une feuille","Une petite branche","Une bouteille en plastique","Un fruit tombé"],a:2,e:"Une bouteille en plastique peut persister très longtemps dans l’environnement."},
+{q:"Que faire de ses déchets pendant une randonnée ?",o:["Les cacher sous une pierre","Les laisser près d’une balise","Les rapporter avec soi","Les jeter dans un ruisseau"],a:2,e:"Le bon réflexe est de repartir avec ses déchets et de les jeter dans une poubelle adaptée."}
+]},
+{title:"Météo & montagne",qs:[
+{q:"Que se passe-t-il généralement avec la température lorsque l’altitude augmente ?",o:["Elle augmente","Elle diminue","Elle reste toujours identique","Elle double"],a:1,e:"En moyenne, la température de l’air diminue avec l’altitude, même si les conditions réelles peuvent varier."},
+{q:"Un orage approche alors que vous êtes sur une crête exposée. Que faut-il faire ?",o:["Rester sur la crête pour mieux voir","Quitter les crêtes et les points exposés","Lever son bâton vers le ciel","Courir vers le sommet"],a:1,e:"Il faut s’éloigner des crêtes, sommets et points exposés et rechercher un endroit plus sûr."},
+{q:"Le rayonnement ultraviolet est-il généralement plus intense en altitude ?",o:["Oui","Non","Seulement la nuit","Seulement sous la pluie"],a:0,e:"Oui. L’atmosphère est moins épaisse en altitude et le rayonnement UV peut être plus intense."}
+]},
+{title:"Chablais & Alpes",qs:[
+{q:"Quelle est la profondeur maximale approximative du lac Léman ?",o:["30 m","130 m","310 m","610 m"],a:2,e:"La profondeur maximale du Léman est d’environ 310 m."},
+{q:"Quel est le plus haut sommet des Alpes ?",o:["Le Mont Blanc","Le Cervin","La Barre des Écrins","Le Grand Combin"],a:0,e:"Le Mont Blanc, à environ 4 806 m selon la mesure et la période considérées, est le plus haut sommet des Alpes."},
+{q:"Comment s’appelle la célèbre source d’Evian située à Evian-les-Bains ?",o:["Source Cachat","Source du Mont-Blanc","Source Gavot","Source du Léman"],a:0,e:"La Source Cachat est la source emblématique d’Evian-les-Bains."}
+]}
+];
 
+let state={answers:{},currentBalise:1,currentQ:0};
+const key="defi_explorateurs_v2";
+
+function load(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(key)||"null");
+    if(saved && saved.answers) state=saved;
+  }catch(e){}
+}
+function save(){localStorage.setItem(key,JSON.stringify(state))}
+function answeredCount(){return Object.keys(state.answers).length}
+function baliseDone(b){return data[b-1].qs.every((_,i)=>state.answers[`${b}-${i}`]!==undefined)}
 function start(){
- document.getElementById('home').classList.add('hidden');
- document.getElementById('game').classList.remove('hidden');
- const p=new URLSearchParams(location.search); const n=parseInt(p.get('balise'));
- if(n>=1&&n<=8)b=n-1;
- renderBalises(); showQuestion();
+  load();
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  const p=new URLSearchParams(location.search).get("balise");
+  const n=parseInt(p,10);
+  state.currentBalise=(n>=1&&n<=8)?n:state.currentBalise||1;
+  state.currentQ=0;
+  render();
+}
+function render(){
+  renderBalises();
+  renderQuestion();
+  updateProgress();
 }
 function renderBalises(){
- const el=document.getElementById('balises');el.innerHTML='';
- answers.forEach((a,i)=>{let bt=document.createElement('button');bt.className='bal'+(a.every(x=>x!==null)?' done':'');bt.textContent='Balise '+(i+1);bt.onclick=()=>{b=i;q=a.findIndex(x=>x===null);if(q<0)q=0;showQuestion()};el.appendChild(bt)});
- const done=answers.flat().filter(x=>x!==null).length;
- document.getElementById('globalbar').style.width=(done/24*100)+'%';
- document.getElementById('globaltxt').textContent=done+' question(s) répondue(s) sur 24';
+  const box=document.getElementById("balises"); box.innerHTML="";
+  data.forEach((b,i)=>{
+    const n=i+1,btn=document.createElement("button");
+    btn.className="bal"+(baliseDone(n)?" done":"")+(state.currentBalise===n?" active":"");
+    btn.textContent=`Balise ${n}`;
+    btn.onclick=()=>{state.currentBalise=n;state.currentQ=0;render()};
+    box.appendChild(btn);
+  });
 }
-function showQuestion(){
- selected=null; const item=data[b][q];
- document.getElementById('badge').textContent='BALISE '+(b+1)+' / 8';
- document.getElementById('qcount').textContent='Question '+(q+1)+' sur 3';
- document.getElementById('question').textContent=item[0];
- let opts=document.getElementById('options');opts.innerHTML='';
- item[1].forEach((x,j)=>{let bt=document.createElement('button');bt.className='option';bt.textContent=String.fromCharCode(65+j)+'.  '+x;
- bt.onclick=()=>{if(answers[b][q]!==null)return;selected=j;document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));bt.classList.add('selected')};opts.appendChild(bt)});
- document.getElementById('feedback').innerHTML='';
- const already=answers[b][q]!==null;
- document.getElementById('validate').classList.toggle('hidden',already);
- document.getElementById('nextq').classList.add('hidden');
- document.getElementById('back').classList.toggle('hidden',!already);
- if(already)reveal(answers[b][q]);
- renderBalises();
+function renderQuestion(){
+  const b=state.currentBalise, q=state.currentQ, item=data[b-1].qs[q];
+  const card=document.getElementById("questionCard");
+  const ans=state.answers[`${b}-${q}`];
+  card.innerHTML=`<span class="badge">BALISE ${b} / 8</span>
+  <h2 class="title2">${data[b-1].title}</h2>
+  <p class="small">Question ${q+1} sur 3</p>
+  <div class="question">${item.q}</div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+  <button class="primary" id="validate">VALIDER</button>`;
+  const options=document.getElementById("options");
+  item.o.forEach((txt,i)=>{
+    const btn=document.createElement("button");
+    btn.className="option"+(ans===i?" selected":"");
+    btn.textContent=String.fromCharCode(65+i)+". "+txt;
+    btn.onclick=()=>{
+      if(state.answers[`${b}-${q}`]===undefined){
+        document.querySelectorAll(".option").forEach(x=>x.classList.remove("selected"));
+        btn.classList.add("selected");
+        btn.dataset.selected="1";
+      }
+    };
+    if(ans!==undefined){
+      btn.disabled=true;
+      if(i===item.a) btn.classList.add("correct");
+      if(i===ans && ans!==item.a) btn.classList.add("wrong");
+    }
+    options.appendChild(btn);
+  });
+  const fb=document.getElementById("feedback");
+  if(ans!==undefined){
+    fb.className="feedback "+(ans===item.a?"correct":"wrong");
+    fb.textContent=(ans===item.a?"✅ Bonne réponse ! ":"❌ Ce n’est pas la bonne réponse. ")+item.e;
+    document.getElementById("validate").textContent=q<2?"QUESTION SUIVANTE":"TERMINER LA BALISE";
+  }
+  document.getElementById("validate").onclick=validate;
+  document.getElementById("finishBtn").style.display=baliseDone(8)?"block":"none";
 }
-function validateAnswer(){
- if(selected===null){alert('Choisis une réponse avant de valider.');return}
- answers[b][q]=selected; reveal(selected); renderBalises();
- document.getElementById('validate').classList.add('hidden');
- if(q<2)document.getElementById('nextq').classList.remove('hidden'); else document.getElementById('back').classList.remove('hidden');
+function validate(){
+  const b=state.currentBalise,q=state.currentQ,keyq=`${b}-${q}`;
+  if(state.answers[keyq]===undefined){
+    const selected=document.querySelector(".option.selected");
+    if(!selected){alert("Choisis une réponse avant de valider.");return}
+    const idx=[...document.querySelectorAll(".option")].indexOf(selected);
+    state.answers[keyq]=idx; save(); renderQuestion(); renderBalises(); updateProgress();
+    return;
+  }
+  if(q<2){state.currentQ++;renderQuestion();return}
+  if(b===8 && baliseDone(8)){finish();return}
+  state.currentQ=0;render();
 }
-function reveal(sel){
- const item=data[b][q],correct=item[2];
- document.querySelectorAll('.option').forEach((bt,j)=>{bt.disabled=true;if(j===correct)bt.classList.add('correct');if(j===sel&&j!==correct)bt.classList.add('wrong')});
- const ok=sel===correct;
- document.getElementById('feedback').innerHTML='<div class="feedback"><b>'+(ok?'✅ Bonne réponse !':'❌ Pas tout à fait.')+'</b><br>'+item[3]+'</div>';
-}
-function nextQuestion(){if(q<2){q++;showQuestion()}}
-function backToBalises(){
- const all=answers.flat().every(x=>x!==null);
- if(all){finish();return}
- // open the first unanswered balise/question for easy prototype navigation
- outer:for(let i=0;i<8;i++)for(let j=0;j<3;j++)if(answers[i][j]===null){b=i;q=j;break outer}
- showQuestion();
+function updateProgress(){
+  const n=answeredCount();
+  document.getElementById("progressText").textContent=`${n} question(s) répondue(s) sur 24`;
+  document.getElementById("progressBar").style.width=(n/24*100)+"%";
 }
 function finish(){
- document.getElementById('game').classList.add('hidden');document.getElementById('final').classList.remove('hidden');
- let total=0,good=0,completed=0;
- answers.forEach((a,i)=>{if(a.every(x=>x!==null))completed++;a.forEach((v,j)=>{if(v!==null){total++;if(v===data[i][j][2])good++}})});
- document.getElementById('score').textContent=good+' / '+total;
- document.getElementById('summary').textContent=completed+' balise(s) complète(s) sur 8 • '+good+' bonne(s) réponse(s)';
+  if(!baliseDone(8)){alert("La Balise 8 doit être terminée pour finir l’aventure.");return}
+  const total=answeredCount();
+  let good=0;
+  Object.entries(state.answers).forEach(([k,v])=>{
+    const [b,q]=k.split("-").map(Number);
+    if(data[b-1].qs[q].a===v) good++;
+  });
+  document.getElementById("game").classList.add("hidden");
+  const r=document.getElementById("result");r.classList.remove("hidden");
+  const done=data.filter((_,i)=>baliseDone(i+1)).length;
+  r.innerHTML=`<h2>🏁 Aventure terminée !</h2>
+  <div class="score">${good}/${total}</div>
+  <p style="text-align:center"><b>Bonnes réponses</b></p>
+  <p style="text-align:center">${done} balise(s) trouvée(s) sur 8 • ${total} question(s) répondue(s) sur 24</p>
+  <p>Bravo ! La <b>Balise 8</b> marque la fin de la randonnée et déclenche le résultat final.</p>
+  <button class="primary" onclick="restart()">RECOMMENCER UNE NOUVELLE AVENTURE</button>`;
 }
-window.addEventListener('DOMContentLoaded',()=>{
- const p=new URLSearchParams(location.search);
- if(p.has('balise')) start();
-});
+function restart(){
+  localStorage.removeItem(key);
+  state={answers:{},currentBalise:1,currentQ:0};
+  location.href=location.pathname;
+}
+function goHome(){
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("home").classList.remove("hidden");
+}
+load();
+if(new URLSearchParams(location.search).has("balise")) start();
 </script>
 </body>
 </html>
